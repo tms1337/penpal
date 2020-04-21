@@ -29,9 +29,9 @@ import createLogger from './createLogger';
 export default ({ parentOrigin = '*', methods = {}, timeout, debug } = {}) => {
   const log = createLogger(debug);
 
-  if (window === window.top) {
+  if (!window.parent) {
     const error = new Error(
-      'connectToParent() must be called within an iframe'
+      'connectToParent() must be called within a window that has a parent'
     );
     error.code = ERR_NOT_IN_IFRAME;
     throw error;
@@ -76,9 +76,7 @@ export default ({ parentOrigin = '*', methods = {}, timeout, debug } = {}) => {
 
       if (parentOrigin !== '*' && parentOrigin !== event.origin) {
         log(
-          `Child received handshake reply from origin ${
-            event.origin
-          } which did not match expected origin ${parentOrigin}`
+          `Child received handshake reply from origin ${event.origin} which did not match expected origin ${parentOrigin}`
         );
         return;
       }
